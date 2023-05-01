@@ -8,8 +8,10 @@ from datetime import (
 from typing import (
     TYPE_CHECKING,
     Union,
+    cast,
 )
 
+from pandas._typing import Scalar
 from pandas.compat._optional import import_optional_dependency
 from pandas.util._decorators import doc
 
@@ -22,7 +24,6 @@ if TYPE_CHECKING:
     from pandas._typing import (
         FilePath,
         ReadBuffer,
-        Scalar,
         StorageOptions,
     )
 
@@ -84,7 +85,8 @@ class CalamineReader(BaseExcelReader):
             elif isinstance(value, date):
                 return pd.Timestamp(value)
             elif isinstance(value, time):
-                return value.isoformat()
+                # cast needed here because Scalar doesn't include datetime.time
+                return cast(Scalar, value)
 
             return value
 
