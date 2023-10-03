@@ -228,14 +228,21 @@ class ODFReader(BaseExcelReader["OpenDocument"]):
         """
         from odf.element import Element
         from odf.namespaces import TEXTNS
-        from odf.text import S
+        from odf.text import P, S
 
+        text_p = P().qname
         text_s = S().qname
 
         value = []
 
+        first_p = True
         for fragment in cell.childNodes:
             if isinstance(fragment, Element):
+                if fragment.qname == text_p:
+                    if first_p:
+                        first_p = False
+                    else:
+                        value.append("\n")
                 if fragment.qname == text_s:
                     spaces = int(fragment.attributes.get((TEXTNS, "c"), 1))
                     value.append(" " * spaces)
